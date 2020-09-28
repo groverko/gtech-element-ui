@@ -100,6 +100,11 @@
             selecting: false
           };
         }
+      },
+
+      haveRecordDates: {
+        type: Array,
+        default: ()=>[]
       }
     },
 
@@ -196,6 +201,7 @@
             cell.disabled = typeof disabledDate === 'function' && disabledDate(cellDate);
             cell.selected = arrayFind(selectedDate, date => date.getTime() === cellDate.getTime());
             cell.customClass = typeof cellClassName === 'function' && cellClassName(cellDate);
+            cell.date = cellDate;
             this.$set(row, this.showWeekNumber ? j + 1 : j, cell);
           }
 
@@ -210,6 +216,8 @@
             row[end].end = isWeekActive;
           }
         }
+        this.$emit('getRecordDates', rows[0][0].date, rows[5][6].date);
+        console.log('emit');
 
         return rows;
       }
@@ -294,6 +302,11 @@
         if (cell.customClass) {
           classes.push(cell.customClass);
         }
+
+        if (this.haveRecordDates.findIndex(date => date.getTime() === cell.date.getTime()) !== -1) {
+          classes.push('date-mark');
+        }
+        console.log('calei');
 
         return classes.join(' ');
       },

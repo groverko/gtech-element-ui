@@ -91,12 +91,14 @@
             <date-table
               v-show="currentView === 'date'"
               @pick="handleDatePick"
+			  @getRecordDates="getRecordDates"
               :selection-mode="selectionMode"
               :first-day-of-week="firstDayOfWeek"
               :value="value"
               :default-value="defaultValue ? new Date(defaultValue) : null"
               :date="date"
               :cell-class-name="cellClassName"
+              :have-record-dates="haveRecordDates"
               :disabled-date="disabledDate">
             </date-table>
             <year-table
@@ -115,6 +117,7 @@
               :date="date"
               :disabled-date="disabledDate">
             </month-table>
+            <div v-if="loading" class="el-loading-mask"><div class="el-loading-spinner"><svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg></div></div>
           </div>
         </div>
       </div>
@@ -496,6 +499,11 @@
         return this.selectableRange.length > 0
           ? timeWithinRange(date, this.selectableRange, this.format || 'HH:mm:ss')
           : true;
+      },
+
+      getRecordDates(firstDate, lastDate) {
+        console.log(9111, firstDate, lastDate);
+        this.$emit('getRecordDates', firstDate, lastDate);
       }
     },
 
@@ -524,7 +532,9 @@
         format: '',
         arrowControl: false,
         userInputDate: null,
-        userInputTime: null
+        userInputTime: null,
+        haveRecordDates: [],
+        loading: false
       };
     },
 

@@ -80,7 +80,7 @@
       :readonly="readonly"
       :validate-event="false"
       :class="{ 'is-focus': visible }"
-      :tabindex="(multiple && filterable) ? '-1' : null"
+      :tabindex="tabindex != undefined ? tabindex : ((multiple && filterable) ? '-1' : null)"
       @focus="handleFocus"
       @blur="handleBlur"
       @keyup.native="debouncedOnInputChange"
@@ -302,7 +302,8 @@
       popperAppendToBody: {
         type: Boolean,
         default: true
-      }
+      },
+      tabindex: String
     },
 
     data() {

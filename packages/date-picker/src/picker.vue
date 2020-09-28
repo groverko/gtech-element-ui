@@ -17,6 +17,7 @@
     @change="handleChange"
     @mouseenter.native="handleMouseEnter"
     @mouseleave.native="showClose = false"
+    :tabindex="tabindex0"
     :validateEvent="false"
     ref="reference">
     <i slot="prefix"
@@ -58,6 +59,8 @@
       @input="handleStartInput"
       @change="handleStartChange"
       @focus="handleFocus"
+      @blur="handleBlur"
+	  :tabindex="tabindex1"
       class="el-range-input">
     <slot name="range-separator">
       <span class="el-range-separator">{{ rangeSeparator }}</span>
@@ -73,6 +76,8 @@
       @input="handleEndInput"
       @change="handleEndChange"
       @focus="handleFocus"
+      @blur="handleBlur"
+	  :tabindex="tabindex2"
       class="el-range-input">
     <i
       @click="handleClickIcon"
@@ -388,7 +393,15 @@ export default {
     validateEvent: {
       type: Boolean,
       default: true
-    }
+    },
+    haveRecordDates: {
+      type: Array,
+      default: ()=>[]
+    },
+    tabindex1: String,
+    tabindex2: String,
+    tabindex0: String,
+    loading: Boolean
   },
 
   components: { ElInput },
@@ -733,6 +746,12 @@ export default {
       this.$emit('focus', this);
     },
 
+    handleBlur(e) {
+      if (e.relatedTarget && !e.relatedTarget.classList.contains('el-range-input')) {
+        this.handleClose();
+      }
+    },
+
     handleKeydown(event) {
       const keyCode = event.keyCode;
 
@@ -831,6 +850,11 @@ export default {
       this.picker.selectionMode = this.selectionMode;
       this.picker.unlinkPanels = this.unlinkPanels;
       this.picker.arrowControl = this.arrowControl || this.timeArrowControl || false;
+      this.picker.haveRecordDates = this.haveRecordDates;
+      this.picker.loading = this.loading;
+      this.$watch('loading', (loading) => {
+        this.picker.loading = loading;
+      });
       this.$watch('format', (format) => {
         this.picker.format = format;
       });
@@ -882,6 +906,10 @@ export default {
           this.refInput[1].setSelectionRange(start, end);
           this.refInput[1].focus();
         }
+      });
+
+      this.picker.$on('getRecordDates', (firstDate, lastDate) => {
+        this.$emit('getRecordDates', firstDate, lastDate);
       });
     },
 
